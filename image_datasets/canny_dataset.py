@@ -9,15 +9,6 @@ import random
 import cv2
 
 
-def canny_processor(image, low_threshold=100, high_threshold=200):
-    image = np.array(image)
-    image = cv2.Canny(image, low_threshold, high_threshold)
-    image = image[:, :, None]
-    image = np.concatenate([image, image, image], axis=2)
-    canny_image = Image.fromarray(image)
-    return canny_image
-
-
 def c_crop(image):
     width, height = image.size
     new_size = min(width, height)
@@ -28,8 +19,10 @@ def c_crop(image):
     return image.crop((left, top, right, bottom))
 
 class CustomImageDataset(Dataset):
+    global control_img
     def __init__(self, img_dir, img_size=512):
-        self.images = [os.path.join(img_dir, i) for i in os.listdir(img_dir) if '.jpg' in i or '.png' in i]
+        self.images = [os.path.join(img_dir, i) for i in os.listdir(img_dir) if ('.jpg' in i or '.png' in i) and 'control' not in i ]
+        control_img=os.path.join(img_dir, 'control.jpg')
         self.images.sort()
         self.img_size = img_size
 
@@ -41,7 +34,7 @@ class CustomImageDataset(Dataset):
             img = Image.open(self.images[idx])
             img = c_crop(img)
             img = img.resize((self.img_size, self.img_size))
-            hint = canny_processor(img)
+            hint = Image.open(control_img)
             img = torch.from_numpy((np.array(img) / 127.5) - 1)
             img = img.permute(2, 0, 1)
             hint = torch.from_numpy((np.array(hint) / 127.5) - 1)
