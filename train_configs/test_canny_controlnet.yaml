@@ -1,4 +1,4 @@
-model_name: "flux-dev-fp8"
+model_name: "flux-dev"
 data_config:
   train_batch_size: 8
   num_workers: 4
