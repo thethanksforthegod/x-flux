@@ -19,10 +19,9 @@ def c_crop(image):
     return image.crop((left, top, right, bottom))
 
 class CustomImageDataset(Dataset):
-    global control_img
     def __init__(self, img_dir, img_size=512):
-        self.images = [os.path.join(img_dir, i) for i in os.listdir(img_dir) if ('.jpg' in i or '.png' in i) and 'control' not in i ]
-        control_img=os.path.join(img_dir, 'control.jpg')
+        self.images = [os.path.join(img_dir, i) for i in os.listdir(img_dir) if '.jpg' in i or '.png' in i and 'control' not in i ]
+        self.control_img=os.path.join(img_dir, 'control.jpg')
         self.images.sort()
         self.img_size = img_size
 
@@ -32,9 +31,10 @@ class CustomImageDataset(Dataset):
     def __getitem__(self, idx):
         try:
             img = Image.open(self.images[idx])
+            print(self.images[idx])
             img = c_crop(img)
             img = img.resize((self.img_size, self.img_size))
-            hint = Image.open(control_img)
+            hint = Image.open(self.control_img)
             img = torch.from_numpy((np.array(img) / 127.5) - 1)
             img = img.permute(2, 0, 1)
             hint = torch.from_numpy((np.array(hint) / 127.5) - 1)
