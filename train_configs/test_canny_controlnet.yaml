@@ -1,9 +1,9 @@
-model_name: "flux-dev"
+model_name: "flux-dev-fp8"
 data_config:
-  train_batch_size: 4
+  train_batch_size: 8
   num_workers: 4
   img_size: 512
-  img_dir: images/
+  img_dir: 4_controlnet/
 report_to: wandb
 train_batch_size: 3
 output_dir: saves_canny/
